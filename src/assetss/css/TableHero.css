@@ -1,10 +1,10 @@
 .custom-table {
     backdrop-filter: blur(20px);
     background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, .5);
     border-radius: 20px;
     backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
     border-radius: 10px;
 }
   
@@ -16,5 +16,33 @@
     color: white;
     border-color: rgba(134, 134, 134, 0.075);
     border-radius: 10px;
+}
+  
+  /* Prefijos para compatibilidad */
+body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+  
+.placeholder-wave {
+    mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+    -webkit-mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+}
+  
+@keyframes placeholder-wave {
+    100% {
+      mask-position: -200% 0%;
+      -webkit-mask-position: -200% 0%;
+    }
+}
+  
+.placeholder-wave {
+    mask-size: 200% 100%;
+    -webkit-mask-size: 200% 100%;
+}
+  
+th {
+    text-align: -webkit-match-parent;
+    text-align: match-parent;
 }
   
