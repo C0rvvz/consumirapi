@@ -9,7 +9,7 @@ const InsertHeroModal = ({ isOpen, toggle, insertar, form, handleChange }) => {
       <ModalBody>
         <FormGroup>
           <Label>Heroe:</Label>
-          <Input type="text" name="heroe" value={form.heroe} onChange={handleChange} />
+          <Input type="text" name="heroe" value={form.name} onChange={handleChange} />
         </FormGroup>
         <FormGroup>
           <Label>Alias:</Label>

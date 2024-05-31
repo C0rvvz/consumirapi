@@ -9,21 +9,21 @@ import axios from 'axios';
 class TableHero extends Component {
   state = {
     data: [
-      { heroe: 'SuperMan', alias: 'Clark Kent', poder: 'Laser' },
-      { heroe: 'Batman', alias: 'Bruce Wayne', poder: 'Pelea' },
-      { heroe: 'Wolverine', alias: 'James Logan', poder: 'Regeneracion' },
-      { heroe: 'Iron Man', alias: 'Anthony Stark', poder: 'Cohetes' },
-      { heroe: 'Spider-Man', alias: 'Peter Parker', poder: 'Telaraña' },
-      { heroe: 'Mujer Maravilla', alias: 'Diana Prince', poder: 'Fuerza' },
-      { heroe: 'Flash', alias: 'Barry Allen', poder: 'Velocidad' },
-      { heroe: 'Capitan America', alias: 'Steve Rogers', poder: 'Escudo indestructible' },
-      { heroe: 'Hulk', alias: 'Bruce Banner', poder: 'Super fuerza' },
-      { heroe: 'Thor', alias: 'Thor', poder: 'Martillo mágico' },
+      { name: 'SuperMan', alias: 'Clark Kent', poder: 'Laser' },
+      { name: 'Batman', alias: 'Bruce Wayne', poder: 'Pelea' },
+      { name: 'Wolverine', alias: 'James Logan', poder: 'Regeneracion' },
+      { name: 'Iron Man', alias: 'Anthony Stark', poder: 'Cohetes' },
+      { name: 'Spider-Man', alias: 'Peter Parker', poder: 'Telaraña' },
+      { name: 'Mujer Maravilla', alias: 'Diana Prince', poder: 'Fuerza' },
+      { name: 'Flash', alias: 'Barry Allen', poder: 'Velocidad' },
+      { name: 'Capitan America', alias: 'Steve Rogers', poder: 'Escudo indestructible' },
+      { name: 'Hulk', alias: 'Bruce Banner', poder: 'Super fuerza' },
+      { name: 'Thor', alias: 'Thor', poder: 'Martillo mágico' },
     ],
     modalInsertar: false,
     modalEditar: false,
     form: {
-      heroe: "",
+      name: "",
       alias: "",
       poder: "",
     },
@@ -39,9 +39,12 @@ class TableHero extends Component {
     });
   };
 
-  manejadorBoton = () => {
-    let url = Apiurl + "heroe";
-    axios.post(url, this.state.form)
+  manejadorBoton = async() => {
+    let url = Apiurl + "heroe/heroe";
+    console.log(this.state.form)
+    await axios.post(url,{
+      data: this.state.form
+    })
       .then(response => {
         console.log(response);
       })
@@ -77,18 +80,18 @@ class TableHero extends Component {
   insertar = () => {
     const { form, data } = this.state;
     const valorNuevo = {
-      heroe: form.heroe,
+      name: form.name,
       alias: form.alias,
       poder: form.poder,
     };
     const lista = [...data, valorNuevo];
-    this.setState({ data: lista, modalInsertar: false, form: { heroe: "", alias: "", poder: "" } });
+    this.setState({ data: lista, modalInsertar: false, form: { name: "", alias: "", poder: "" } });
   };
 
   editar = () => {
     const { form, data } = this.state;
     const listaActualizada = data.map(item => {
-      if (item.heroe === form.heroe) {
+      if (item.name === form.name) {
         return {
           ...item,
           alias: form.alias,
@@ -101,14 +104,14 @@ class TableHero extends Component {
     this.setState({
       data: listaActualizada,
       modalEditar: false,
-      form: { heroe: "", alias: "", poder: "" } // Limpiar el formulario después de editar
+      form: { name: "", alias: "", poder: "" } // Limpiar el formulario después de editar
     });
   };
 
   eliminar = (dato) => {
-    const opcion = window.confirm(`${dato.heroe} se eliminará, ¿está seguro de esto?`);
+    const opcion = window.confirm(`${dato.name} se eliminará, ¿está seguro de esto?`);
     if (opcion) {
-      const lista = this.state.data.filter((item) => item.heroe !== dato.heroe);
+      const lista = this.state.data.filter((item) => item.name !== dato.name);
       this.setState({ data: lista });
     }
   };
@@ -134,8 +137,8 @@ class TableHero extends Component {
           </thead>
           <tbody>
             {this.state.data.map((elemento, index) => (
-              <tr key={elemento.heroe}>
-                <td>{elemento.heroe}</td>
+              <tr key={elemento.name}>
+                <td>{elemento.name}</td>
                 <td
                   onMouseEnter={() => this.handleMouseEnter(index)}
                   onMouseLeave={this.handleMouseLeave}

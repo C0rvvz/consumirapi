@@ -13,7 +13,7 @@ const EditHeroModal = ({ isOpen, toggle, handleChange, editar, form }) => {
       <ModalBody>
         <FormGroup>
           <Label>Heroe:</Label>
-          <Input className="form-control" readOnly type="text" value={form.heroe} onChange={handleChange}/>
+          <Input className="form-control" readOnly type="text" value={form.name} onChange={handleChange}/>
         </FormGroup>
         <FormGroup>
           <Label>Alias:</Label>
