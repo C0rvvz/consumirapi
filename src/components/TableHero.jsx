@@ -3,6 +3,7 @@ import { Table, Button } from 'reactstrap';
 import '../assetss/css/App.css'; // Ajusta la ruta según la estructura de tu proyecto
 import EditHeroModal from './EditHeroModal';
 import InsertHeroModal from './InsertHeroModal';
+import InsertPowerModal from './InsertPowerModal';
 
 class TableHero extends Component {
   state = {
@@ -13,7 +14,8 @@ class TableHero extends Component {
       name: "",
       alias: ""
     },
-    hoverIndex: null
+    hoverIndex: null,
+    heroeToInsertPower: null // Nuevo estado para guardar el héroe antes de insertar el poder
   };
 
   handleChange = e => {
@@ -53,7 +55,8 @@ class TableHero extends Component {
     const { form, data } = this.state;
     const valorNuevo = {
       name: form.name,
-      alias: form.alias
+      alias: form.alias,
+      poder: "" // Puedes inicializar el poder aquí o en otro momento según sea necesario
     };
     const lista = [...data, valorNuevo];
     this.setState({ data: lista, modalInsertar: false, form: { name: "", alias: "" } });
@@ -84,6 +87,10 @@ class TableHero extends Component {
       const lista = this.state.data.filter((item) => item.name !== dato.name);
       this.setState({ data: lista });
     }
+  };
+
+  guardarHeroeParaInsertarPoder = (heroe) => {
+    this.setState({ heroeToInsertPower: heroe, modalInsertar: false });
   };
 
   render() {
@@ -131,10 +138,15 @@ class TableHero extends Component {
         <InsertHeroModal
           isOpen={this.state.modalInsertar}
           toggle={this.ocultarModalInsertar}
-          insertar={this.insertar}
-          form={this.state.form}
-          handleChange={this.handleChange}
+          guardarHeroe={this.guardarHeroeParaInsertarPoder} // Pasar función para guardar héroe
         />
+        {this.state.heroeToInsertPower && (
+          <InsertPowerModal
+            isOpen={true} // Abre automáticamente cuando hay un héroe para insertar poder
+            toggle={() => this.setState({ heroeToInsertPower: null })}
+            heroe={this.state.heroeToInsertPower}
+          />
+        )}
       </React.Fragment>
     );
   }
