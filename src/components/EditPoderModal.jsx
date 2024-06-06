@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Label, Input } from 'reactstrap';
 
-const EditHeroModal = ({ isOpen, toggle, handleChange, editar, form }) => {
-  if (!form) return null; // Verifica que form no sea undefined
+const EditPoderModal = ({ isOpen, toggle, handleChange, editar, form }) => {
+  if (!form) return null; // Verifica que formp no sea undefined
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Editar Héroe</ModalHeader>
+      <ModalHeader toggle={toggle}>Editar Poder</ModalHeader>
       <ModalBody>
         <FormGroup>
           <Label for="name">Nombre</Label>
@@ -19,13 +19,13 @@ const EditHeroModal = ({ isOpen, toggle, handleChange, editar, form }) => {
           />
         </FormGroup>
         <FormGroup>
-          <Label for="alias">Alias</Label>
+          <Label for="heroe_name">Nombre del Héroe</Label>
           <Input
             type="text"
-            name="alias"
-            id="alias"
+            name="heroe_name"
+            id="heroe_name"
             onChange={handleChange}
-            value={form.alias || ""}
+            value={form.heroe_name || ""}
           />
         </FormGroup>
       </ModalBody>
@@ -37,4 +37,4 @@ const EditHeroModal = ({ isOpen, toggle, handleChange, editar, form }) => {
   );
 };
 
-export default EditHeroModal;
+export default EditPoderModal;

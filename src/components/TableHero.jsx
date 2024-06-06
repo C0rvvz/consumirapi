@@ -3,29 +3,15 @@ import { Table, Button } from 'reactstrap';
 import '../assetss/css/App.css'; // Ajusta la ruta según la estructura de tu proyecto
 import EditHeroModal from './EditHeroModal';
 import InsertHeroModal from './InsertHeroModal';
-import { Apiurl } from '../services/apirest';
-import axios from 'axios';
 
 class TableHero extends Component {
   state = {
-    data: [
-      { name: 'SuperMan', alias: 'Clark Kent', poder: 'Laser' },
-      { name: 'Batman', alias: 'Bruce Wayne', poder: 'Pelea' },
-      { name: 'Wolverine', alias: 'James Logan', poder: 'Regeneracion' },
-      { name: 'Iron Man', alias: 'Anthony Stark', poder: 'Cohetes' },
-      { name: 'Spider-Man', alias: 'Peter Parker', poder: 'Telaraña' },
-      { name: 'Mujer Maravilla', alias: 'Diana Prince', poder: 'Fuerza' },
-      { name: 'Flash', alias: 'Barry Allen', poder: 'Velocidad' },
-      { name: 'Capitan America', alias: 'Steve Rogers', poder: 'Escudo indestructible' },
-      { name: 'Hulk', alias: 'Bruce Banner', poder: 'Super fuerza' },
-      { name: 'Thor', alias: 'Thor', poder: 'Martillo mágico' },
-    ],
+    data: [],
     modalInsertar: false,
     modalEditar: false,
     form: {
       name: "",
-      alias: "",
-      poder: "",
+      alias: ""
     },
     hoverIndex: null
   };
@@ -37,20 +23,6 @@ class TableHero extends Component {
         [e.target.name]: e.target.value
       }
     });
-  };
-
-  manejadorBoton = async() => {
-    let url = Apiurl + "heroe/heroe";
-    console.log(this.state.form)
-    await axios.post(url,{
-      data: this.state.form
-    })
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.error("There was an error with the request!", error);
-      });
   };
 
   mostrarModalInsertar = () => {
@@ -81,11 +53,10 @@ class TableHero extends Component {
     const { form, data } = this.state;
     const valorNuevo = {
       name: form.name,
-      alias: form.alias,
-      poder: form.poder,
+      alias: form.alias
     };
     const lista = [...data, valorNuevo];
-    this.setState({ data: lista, modalInsertar: false, form: { name: "", alias: "", poder: "" } });
+    this.setState({ data: lista, modalInsertar: false, form: { name: "", alias: "" } });
   };
 
   editar = () => {
@@ -94,8 +65,7 @@ class TableHero extends Component {
       if (item.name === form.name) {
         return {
           ...item,
-          alias: form.alias,
-          poder: form.poder
+          alias: form.alias
         };
       }
       return item;
@@ -104,7 +74,7 @@ class TableHero extends Component {
     this.setState({
       data: listaActualizada,
       modalEditar: false,
-      form: { name: "", alias: "", poder: "" } // Limpiar el formulario después de editar
+      form: { name: "", alias: "" } // Limpiar el formulario después de editar
     });
   };
 
@@ -121,9 +91,6 @@ class TableHero extends Component {
       <React.Fragment>
         <br />
         <Button color="success" onClick={this.mostrarModalInsertar}>Ingresar nuevo héroe</Button>
-        <br />
-        <br />
-        <Button color="primary" onClick={this.manejadorBoton}>Enviar Datos a API</Button>
         <br />
         <br />
         <Table striped bordered hover className="custom-table">
