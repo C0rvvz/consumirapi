@@ -12,15 +12,12 @@ const InsertPowerModal = ({ isOpen, toggle, heroe }) => {
     console.log("Insertando poder");
 
     try {
+      
       const url = Apiurl + "poder/poder";
       const response = await axios.post(url, {
         name: poder,
-        heroe: {  // Enviar el objeto completo del héroe
-          name: heroe.name,
-          alias: heroe.alias
-        }
+        heroe_name: heroe.name
       });
-
       console.log("Poder insertado:", response.data);
       toggle();
     } catch (error) {

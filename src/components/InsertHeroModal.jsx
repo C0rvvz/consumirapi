@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Apiurl } from '../services/apirest';
 import InsertPowerModal from './InsertPowerModal';
 
-const InsertHeroModal = ({ isOpen, toggle }) => {
+const InsertHeroModal = ({ isOpen, toggle, refresh }) => {
   const [form, setForm] = useState({
     name: "",
     alias: ""
@@ -43,11 +43,11 @@ const InsertHeroModal = ({ isOpen, toggle }) => {
         <ModalBody>
           <FormGroup>
             <Label>Nombre del héroe:</Label>
-            <Input type="text" name="name" value={form.name} onChange={handleChange} />
+            <Input type="text" name="name" id="name" value={form.name} onChange={handleChange} />
           </FormGroup>
           <FormGroup>
             <Label>Alias:</Label>
-            <Input type="text" name="alias" value={form.alias} onChange={handleChange} />
+            <Input type="text" name="alias" id="alias" value={form.alias} onChange={handleChange} />
           </FormGroup>
         </ModalBody>
         <ModalFooter>
@@ -62,6 +62,7 @@ const InsertHeroModal = ({ isOpen, toggle }) => {
           toggle={() => {
             setPowerModalOpen(false);
             setHeroCreated(null); // Limpiar el estado del héroe creado
+            refresh()
           }}
           heroe={heroCreated} // Pasar el héroe creado al modal de poder
         />
