@@ -43,11 +43,23 @@ const InsertHeroModal = ({ isOpen, toggle, refresh }) => {
         <ModalBody>
           <FormGroup>
             <Label>Nombre del héroe:</Label>
-            <Input type="text" name="name" id="name" value={form.name} onChange={handleChange} />
+            <Input 
+            type="text" 
+            name="name" 
+            id="name" 
+            value={form.name} 
+            onChange={handleChange} 
+            />
           </FormGroup>
           <FormGroup>
             <Label>Alias:</Label>
-            <Input type="text" name="alias" id="alias" value={form.alias} onChange={handleChange} />
+            <Input 
+            type="text" 
+            name="alias" 
+            id="alias" 
+            value={form.alias} 
+            onChange={handleChange} 
+            />
           </FormGroup>
         </ModalBody>
         <ModalFooter>

@@ -12,7 +12,6 @@ const InsertPowerModal = ({ isOpen, toggle, heroe }) => {
     console.log("Insertando poder");
 
     try {
-      
       const url = Apiurl + "poder/poder";
       const response = await axios.post(url, {
         name: poder,
@@ -37,15 +36,29 @@ const InsertPowerModal = ({ isOpen, toggle, heroe }) => {
         {error && <Alert color="danger">{error}</Alert>}
         <FormGroup>
           <Label for="poder">Poder:</Label>
-          <Input type="text" name="poder" id="poder" value={poder} onChange={handleChange} />
+          <Input 
+          type="text" 
+          name="poder" 
+          id="poder" 
+          value={poder} 
+          onChange={handleChange} 
+          />
         </FormGroup>
         <FormGroup>
           <Label>Nombre del héroe:</Label>
-          <Input type="text" value={heroe.name} disabled />
+          <Input 
+          type="text" 
+          value={heroe.name} 
+          disabled 
+          />
         </FormGroup>
         <FormGroup>
           <Label>Alias del héroe:</Label>
-          <Input type="text" value={heroe.alias} disabled />
+          <Input 
+          type="text" 
+          value={heroe.alias} 
+          disabled 
+          />
         </FormGroup>
       </ModalBody>
       <ModalFooter>

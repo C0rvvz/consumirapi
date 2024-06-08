@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Container } from 'reactstrap';
 import EditHeroModal from './EditHeroModal';
 import InsertHeroModal from './InsertHeroModal';
+import DeleteHeroModal from './DeleteHeroModal';
 import '../assetss/css/App.css'; 
 import { Apiurl } from '../services/apirest';
 import axios from 'axios';
@@ -11,10 +12,18 @@ class TableHero extends Component {
     super(props);
     this.state = {
       data: [],
+      from: {
+        heroe: {
+          name: "",
+          alias: ""
+        },
+        poder: ""
+      },
       modalInsertar: false,
       modalEditar: false,
       hoverIndex: null,
-      heroeToInsertPower: null
+      heroeToInsertPower: null,
+      heroeToEdit: null // Añadir estado para el héroe a editar
     };
   };
 
@@ -27,6 +36,14 @@ class TableHero extends Component {
     });
   };
 
+  mostrarModalEliminar = (heroe) => {
+    this.setState({ modalEliminar: true, heroeToDelete: heroe });
+  };
+
+  ocultarModalEliminar = () => {
+    this.setState({ modalEliminar: false });
+  }
+
   mostrarModalInsertar = () => {
     this.setState({ modalInsertar: true });
   };
@@ -36,26 +53,23 @@ class TableHero extends Component {
   };
 
   mostrarModalEditar = (registro) => {
-    this.setState({ modalEditar: true, form: registro });
+    this.setState({ modalEditar: true, heroeToEdit: registro });
   };
 
   ocultarModalEditar = () => {
-    this.setState({ modalEditar: false });
+    this.setState({ modalEditar: false, heroeToEdit: null });
   };
+
+  guardarHeroeParaEditarPoder = (heroe) => {
+    this.serState({ heroeToEdit: heroe, modalEditar: false});
+  };
+
+  editarPoder = (Poder) => {
+
+  }
 
   guardarHeroeParaInsertarPoder = (heroe) => {
     this.setState({ heroeToInsertPower: heroe, modalInsertar: false });
-  };
-
-  insertar = () => {
-    const { form, data } = this.state;
-    const valorNuevo = {
-      heroeid: form.heroe.name,
-      alias: form.heroe.alias,
-      poder: form.poder
-    };
-    const lista = [...data, valorNuevo];
-    this.setState({ data: lista, modalInsertar: false, form: { heroe: { name: "", alias: "" }, poder: "" } });
   };
 
   insertarPoder = (poder) => {
@@ -74,33 +88,7 @@ class TableHero extends Component {
     this.setState({ data: newData, heroeToInsertPower: null });
   };
 
-  editar = () => {
-    const { form, data } = this.state;
-    const listaActualizada = data.map(item => {
-      if (item.heroe.name === form.heroe.name) {
-        return {
-          ...item,
-          alias: form.heroe.alias,
-          poder: form.poder
-        };
-      }
-      return item;
-    });
-
-    this.setState({
-      data: listaActualizada,
-      modalEditar: false,
-      form: { heroe: { name:"", alias:"" }, poder: "" } // Limpiar el formulario después de editar
-    });
-  };
-
-  eliminar = (dato) => {
-    const opcion = window.confirm(`${dato.heroe.name} se eliminará, ¿está seguro de esto?`);
-    if (opcion) {
-      const lista = this.state.data.filter((item) => item.heroe.name !== dato.heroe.name);
-      this.setState({ data: lista });
-    }
-  };
+  
 
   obtenerheroes = async () => {
     try {
@@ -115,7 +103,6 @@ class TableHero extends Component {
 
   componentDidMount () {
     this.obtenerheroes()
-    console.log(this.state.data)
   };
 
   render() {
@@ -141,13 +128,11 @@ class TableHero extends Component {
             {this.state.data.map((elemento, index) => (
               <tr key={elemento.name}>
                 <td>{elemento.name}</td>
-                <td>
-                  {elemento.alias}
-                </td>
+                <td>{elemento.alias}</td>
                 <td>{elemento.poder && elemento.poder.map(x => x.name).join(" , ")}</td>
                 <td>
                   <Button color="success" onClick={() => this.mostrarModalEditar(elemento)}>Editar</Button>{" "}
-                  <Button color="danger" onClick={() => this.eliminar(elemento)}>Eliminar</Button>
+                  <Button color="danger" onClick={() => this.mostrarModalEliminar(elemento)}>Eliminar</Button>
                 </td>
               </tr>
             ))}
@@ -156,13 +141,13 @@ class TableHero extends Component {
         <InsertHeroModal
           isOpen={this.state.modalInsertar}
           toggle={this.ocultarModalInsertar}
-          insertar={this.insertar}
+          refresh={this.obtenerheroes}
         />
         <EditHeroModal
           isOpen={this.state.modalEditar}
           toggle={this.ocultarModalEditar}
-          editar={this.editar}
-          form={this.state.form}
+          heroe={this.state.heroeToEdit} // Pasar el héroe seleccionado como prop
+          refresh={this.obtenerheroes}
         />
         <InsertHeroModal
           isOpen={this.state.modalInsertar}
@@ -170,12 +155,13 @@ class TableHero extends Component {
           guardarHeroe={this.guardarHeroeParaInsertarPoder} // Pasar función para guardar héroe
           editar={this.editar}          
           form={this.state.form}
-        />
-        <InsertHeroModal
-          isOpen={this.state.modalInsertar}
-          toggle={this.ocultarModalInsertar}
           refresh={this.obtenerheroes}
-          guardarHeroe={this.guardarHeroeParaInsertarPoder} // Pasar función para guardar héroe
+        />
+        <DeleteHeroModal
+          isOpen={this.state.modalEliminar}
+          toggle={this.ocultarModalEliminar}
+          heroe={this.state.heroeToDelete}
+          refresh={this.obtenerheroes}
         />
       </Container>
     );
