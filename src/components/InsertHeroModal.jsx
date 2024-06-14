@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Button } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
 import axios from 'axios';
 import { Apiurl } from '../services/apirest';
-import InsertPowerModal from './InsertPowerModal';
+import '../assetss/css/App.css'; 
 
-const InsertHeroModal = ({ isOpen, toggle, refresh }) => {
+const InsertHeroModal = ({ isOpen, toggle, refresh, nextId, incrementarId }) => {
   const [form, setForm] = useState({
-    name: "",
-    alias: ""
+    idHero: nextId,
+    nombreHero: "",
+    aliasHero: "",
+    fechaCreacionHero: "",
+    estadoHero: "",
   });
+  const [error, setError] = useState(null);
   const [heroCreated, setHeroCreated] = useState(null);
-  const [powerModalOpen, setPowerModalOpen] = useState(false);
+
+  useEffect(() => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      idHero: nextId
+    }));
+  }, [nextId]);
 
   const handleChange = (e) => {
     setForm({
@@ -19,67 +29,82 @@ const InsertHeroModal = ({ isOpen, toggle, refresh }) => {
     });
   };
 
-  const crearSuperH = async (e) => {
+  const crearSuperHero = async (e) => {
     e.preventDefault();
     try {
-      const url = Apiurl + "heroe/heroe";
-      const response = await axios.post(url, {
-        name: form.name,
-        alias: form.alias
-      });
+      const url = Apiurl + "hero/postHero";
+      const response = await axios.post(url, form);
+      console.log("Heroe insertado:", response.data);
       setHeroCreated(response.data); // Guardar el héroe recién creado
+      incrementarId(); // Incrementar el ID para el próximo héroe
       toggle(); // Cerrar el modal de inserción de héroe
-      setPowerModalOpen(true); // Abrir el modal de inserción de poder
+      refresh();
     } catch (error) {
       console.error("Error al crear héroe:", error);
-      // Manejar el error según sea necesario
+      setError(error.response.data.message);
     }
   };
 
   return (
-    <div>
-      <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Insertar nuevo héroe</ModalHeader>
+    <>
+      <Modal isOpen={isOpen} toggle={toggle} className="custom-modal">
+        <ModalHeader toggle={toggle}>Insertar nuevo heroe</ModalHeader>
         <ModalBody>
+          {error && <Alert color="danger">{error}</Alert>}
           <FormGroup>
-            <Label>Nombre del héroe:</Label>
+            <Label>Nombre del heroe:</Label>
             <Input 
-            type="text" 
-            name="name" 
-            id="name" 
-            value={form.name} 
-            onChange={handleChange} 
+              type="text" 
+              name="nombreHero" 
+              id="nombreHero" 
+              value={form.nombreHero} 
+              onChange={handleChange} 
             />
           </FormGroup>
           <FormGroup>
-            <Label>Alias:</Label>
+            <Label>Alias del heroe:</Label>
             <Input 
-            type="text" 
-            name="alias" 
-            id="alias" 
-            value={form.alias} 
-            onChange={handleChange} 
+              type="text" 
+              name="aliasHero" 
+              id="aliasHero" 
+              value={form.aliasHero} 
+              onChange={handleChange} 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Fecha creacion del heroe:</Label>
+            <Input 
+              type="text" 
+              name="fechaCreacionHero" 
+              id="fechaCreacionHero" 
+              value={form.fechaCreacionHero} 
+              onChange={handleChange} 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Estado del heroe:</Label>
+            <Input 
+              type="text" 
+              name="estadoHero" 
+              id="estadoHero" 
+              value={form.estadoHero} 
+              onChange={handleChange} 
             />
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={crearSuperH}>Insertar</Button>
+          <Button color="primary" onClick={crearSuperHero}>Insertar</Button>
           <Button color="secondary" onClick={toggle}>Cancelar</Button>
         </ModalFooter>
       </Modal>
 
       {heroCreated && (
-        <InsertPowerModal
-          isOpen={powerModalOpen}
-          toggle={() => {
-            setPowerModalOpen(false);
-            setHeroCreated(null); // Limpiar el estado del héroe creado
-            refresh()
-          }}
-          heroe={heroCreated} // Pasar el héroe creado al modal de poder
-        />
+        <div>
+          <p>Heroe {heroCreated.nombreHero} creado exitosamente!</p>
+          {/* O cualquier otra acción que necesites realizar con heroCreated */}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

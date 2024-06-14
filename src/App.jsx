@@ -9,7 +9,9 @@ function App() {
     <React.Fragment>
       <Router>
         <Routes>
-          <Route path="/" element={<TableHero />} />
+          <Route path="/" element={props=>(<TableHero {...props} />)} />
+          <Route path="/power" element={props=>(<TablePower {...props} />)} />
+          <Route path="/identification" element={props=>(<TableIdentification {...props} />)} />
         </Routes>
       </Router>
     </React.Fragment>

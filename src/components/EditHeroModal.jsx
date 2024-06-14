@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Label, Input } from 'reactstrap';
+import React, { useState } from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
 import axios from 'axios';
 import { Apiurl } from '../services/apirest';
-import EditPowerModal from './EditPowerModal';
+import '../assetss/css/App.css'; 
 
-const EditHeroModal = ({ isOpen, toggle, heroe, refresh }) => {
+const InsertHeroModal = ({ isOpen, toggle, refresh }) => {
   const [form, setForm] = useState({
-    name: "",
-    alias: ""
+    idHero: "",
+    nombreHero: "",
+    aliasHero: "",
+    fechaCreacionHero: "",
+    estadoHero: "",
   });
-  const [heroUpdated, setHeroUpdated] = useState(null);
-  const [powerModalOpen, setPowerModalOpen] = useState(false);
+  const [hero, setHero] = useState('');
+  const [heroCreated, setHeroCreated] = useState(null);
   const [data, setData] = useState([]); // Estado local para la lista de héroes
-  
-  useEffect(() => {
-    if (heroe) {
-      setForm({
-        name: heroe.name || "", // Verifica si heroe.name está definido antes de asignarlo
-        alias: heroe.alias || "" // Verifica si heroe.alias está definido antes de asignarlo
-      });
-    }
-  }, [heroe]);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setForm({
@@ -29,84 +24,84 @@ const EditHeroModal = ({ isOpen, toggle, heroe, refresh }) => {
     });
   };
 
-  const guardarHeroe = async (e) => {
+  const EditarHero = async (e) => {
     e.preventDefault();
     try {
-      const originalName = heroe.name; // Declare originalName here
-      const url = `${Apiurl}heroe/heroe/${originalName}`;
-      const response = await axios.put(url, {
-        name: originalName,
-        alias: form.alias
+      const url = Apiurl + "hero/postHero";
+      const response = await axios.post(url, {
+        idHero: form.idHero,
+        nombreHero: form.nombreHero,
+        aliasHero: form.aliasHero,
+        fechaCreacionHero: form.fechaCreacionHero,
+        estadoHero: form.estadoHero
       });
-  
-      // Actualiza el estado del héroe editado
       const listaActualizada = data.map(item => {
-        if (item.name === originalName) {
-          return {...item, name: form.name, alias: form.alias};
-        }
-        return item;
+        return {...item, name: hero};
       });
-      setHeroUpdated(response.data);
+      console.log("Heroe insertado:", response.data);
+      setHeroCreated(response.data); // Guardar el héroe recién creado
       setData(listaActualizada); // Actualiza el estado local
-      toggle(); // Cierra el modal de edición de héroe
-      setPowerModalOpen(true); // Abrir el modal de edición de poder
+      toggle();
+      refresh(); 
     } catch (error) {
-      console.error("Error al editar héroe:", error);
+      console.error("Error al crear héroe:", error);
+      setError(error.response.data.message);
+      // Manejar el error según sea necesario
     }
   };
 
-  const handleTogglePowerModal = () => {
-    setPowerModalOpen(!powerModalOpen); // Alternar el estado del modal de poder
-    setHeroUpdated(null); // Limpiar el estado del héroe editado
-    refresh(); // Actualizar la lista de héroes
-    toggle(); // Cerrar el modal de edición de héroe también al abrir el modal de poder
-  };
-
   return (
-    <div>
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Editar Héroe</ModalHeader>
+        <ModalHeader toggle={toggle}>Insertar nuevo heroe</ModalHeader>
         <ModalBody>
+          {error && <Alert color="danger">{error}</Alert>}
           <FormGroup>
-            <Label for="name">Nombre</Label>
-            <Input
-              type="text"
-              name="name"
-              id="name"
-              value={form.name}
-              onChange={handleChange}
+            <Label>Nombre del heroe:</Label>
+            <Input 
+              type="text" 
+              name="nombreHero" 
+              id="nombreHero" 
+              value={form.nombreHero} 
+              onChange={handleChange} 
             />
           </FormGroup>
           <FormGroup>
-            <Label for="alias">Alias</Label>
-            <Input
-              type="text"
-              name="alias"
-              id="alias"
-              value={form.alias}
-              onChange={handleChange}
+            <Label>Alias del heroe:</Label>
+            <Input 
+              type="text" 
+              name="aliasHero" 
+              id="aliasHero" 
+              value={form.aliasHero} 
+              onChange={handleChange} 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Fecha creacion del heroe:</Label>
+            <Input 
+              type="text" 
+              name="fechaCreacionHero" 
+              id="fechaCreacionHero" 
+              value={form.fechaCreacionHero} 
+              onChange={handleChange} 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Estado del heroe:</Label>
+            <Input 
+              type="text" 
+              name="estadoHero" 
+              id="estadoHero" 
+              value={form.estadoHero} 
+              onChange={handleChange} 
             />
           </FormGroup>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={guardarHeroe}>Editar</Button>
-          <Button color="secondary" onClick={toggle}>Cancelar</Button>
+        <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button color="primary" onClick={EditarHero}>Insertar</Button>
+          <Button color="secondary" onClick={() => { console.log('Cancelar clicked'); toggle(); }}>Cancelar</Button>
         </ModalFooter>
       </Modal>
-      {heroUpdated && (
-        <EditPowerModal
-          isOpen={powerModalOpen}
-          toggle={() => {
-            setHeroUpdated(null);
-            refresh();
-            handleTogglePowerModal();
-            setPowerModalOpen(false);
-          }}
-          heroe={heroUpdated} // Pasar el héroe editado al modal de poder
-        />
-      )}
-    </div>
   );
 };
 
-export default EditHeroModal;
+export default InsertHeroModal;

@@ -8,25 +8,35 @@ import { Apiurl } from '../services/apirest';
 import axios from 'axios';
 
 class TableHero extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      from: {
-        heroe: {
-          name: "",
-          alias: ""
-        },
-        poder: ""
+      data: [
+        {
+          "idHero": 1,
+          "nombreHero": "Wolverine",
+          "aliasHero": "James Logan",
+          "fechaCreacionHero": "2020-20-19",
+          "estadoHero": "vivo"
+      }],
+      form: {
+        idHero: "",
+        nombreHero: "",
+        aliasHero: "",
+        fechaCreacionHero: "",
+        estadoHero: ""
       },
       modalInsertar: false,
       modalEditar: false,
+      modalEliminar: false,
       hoverIndex: null,
-      heroeToInsertPower: null,
-      heroeToEdit: null // Añadir estado para el héroe a editar
+      heroToEdit: null,
+      heroToDelete: null,
+      nextId: 1, // Estado para manejar el próximo ID
     };
   };
-
+  
   handleChange = e => {
     this.setState({
       form: {
@@ -36,8 +46,16 @@ class TableHero extends Component {
     });
   };
 
-  mostrarModalEliminar = (heroe) => {
-    this.setState({ modalEliminar: true, heroeToDelete: heroe });
+  manejarBotonPower = () => {
+    this.props.history.push("/power");
+  };
+
+  manejarBotonIdentification = () => {
+    this.props.history.push("/identification");
+  };
+
+  mostrarModalEliminar = (hero) => {
+    this.setState({ modalEliminar: true, heroToDelete: hero });
   };
 
   ocultarModalEliminar = () => {
@@ -53,56 +71,36 @@ class TableHero extends Component {
   };
 
   mostrarModalEditar = (registro) => {
-    this.setState({ modalEditar: true, heroeToEdit: registro });
+    this.setState({ modalEditar: true, heroToEdit: registro });
   };
 
   ocultarModalEditar = () => {
-    this.setState({ modalEditar: false, heroeToEdit: null });
+    this.setState({ modalEditar: false, heroToEdit: null });
   };
 
-  guardarHeroeParaEditarPoder = (heroe) => {
-    this.serState({ heroeToEdit: heroe, modalEditar: false});
-  };
-
-  editarPoder = (Poder) => {
-
-  }
-
-  guardarHeroeParaInsertarPoder = (heroe) => {
-    this.setState({ heroeToInsertPower: heroe, modalInsertar: false });
-  };
-
-  insertarPoder = (poder) => {
-    const { data, heroeToInsertPower } = this.state;
-    const newData = data.map(item => {
-      if (item.heroe.name === heroeToInsertPower.heroe.name) {
-        return {
-          ...item,
-          alias: heroeToInsertPower.heroe.alias,
-          poder: poder
-        };
-      }
-      return item;
-    });
-
-    this.setState({ data: newData, heroeToInsertPower: null });
-  };
-
-  
-
-  obtenerheroes = async () => {
+  obtenerHeros = async () => {
     try {
-      const url = Apiurl + "heroe/heroe";
+      const url = Apiurl + "hero/getHeros";
       const response = await axios.get(url);
-      this.setState({data: response.data});
+      this.setState({ data: response.data });
       console.log(response.data);
     } catch (error) {
-      console.error("Error fetching heroes:", error);
+      console.error("Error al obtener los heroes:", error);
     }
   };
 
-  componentDidMount () {
-    this.obtenerheroes()
+  actualizarNextId = () => {
+    const { data } = this.state;
+    if (data.length > 0) {
+      const maxId = Math.max(...data.map(hero => hero.idHero));
+      this.setState({ nextId: maxId + 1 });
+    } else {
+      this.setState({ nextId: 1 });
+    }
+  };
+
+  componentDidMount() {
+    this.obtenerHeros();
   };
 
   render() {
@@ -112,25 +110,31 @@ class TableHero extends Component {
           <h1 className="title">Proyecto Código Limpio: CRUD</h1>
         </header>
         <br />
-        <Button color="success" onClick={this.mostrarModalInsertar}>Ingresar nuevo héroe</Button>
+        <Button color="success" onClick={this.mostrarModalInsertar}>Ingresar nuevo heroe</Button>
         <br />
         <br />
         <Table striped bordered hover className="custom-table">
           <thead>
             <tr>
-              <th>Heroe</th>
-              <th>Alias</th>
-              <th>Poder</th>
+              <th>Id del heroe</th>
+              <th>Nombre del heroe</th>
+              <th>Alias del heroe</th>
+              <th>Fecha de creación del heroe</th>
+              <th>Estado del heroe</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {this.state.data.map((elemento, index) => (
-              <tr key={elemento.name}>
-                <td>{elemento.name}</td>
-                <td>{elemento.alias}</td>
-                <td>{elemento.poder && elemento.poder.map(x => x.name).join(" , ")}</td>
+              <tr key={elemento.idHero}>
+                <td>{elemento.idHero}</td>
+                <td>{elemento.nombreHero}</td>
+                <td>{elemento.aliasHero}</td>
+                <td>{elemento.fechaCreacionHero}</td>
+                <td>{elemento.estadoHero}</td>
                 <td>
+                  <Button color="success" onClick={() => this.manejarBotonPower(elemento)}>Poder</Button>{" "}
+                  <Button color="success" onClick={() => this.manejarBotonIdentification(elemento)}>Identificacion</Button>{" "}
                   <Button color="success" onClick={() => this.mostrarModalEditar(elemento)}>Editar</Button>{" "}
                   <Button color="danger" onClick={() => this.mostrarModalEliminar(elemento)}>Eliminar</Button>
                 </td>
@@ -141,27 +145,21 @@ class TableHero extends Component {
         <InsertHeroModal
           isOpen={this.state.modalInsertar}
           toggle={this.ocultarModalInsertar}
-          refresh={this.obtenerheroes}
+          refresh={this.obtenerHeros}
+          nextId={this.state.nextId} // Pasar el próximo ID al modal
+          incrementarId={this.actualizarNextId} // Pasar la función para incrementar el ID
         />
         <EditHeroModal
           isOpen={this.state.modalEditar}
           toggle={this.ocultarModalEditar}
-          heroe={this.state.heroeToEdit} // Pasar el héroe seleccionado como prop
-          refresh={this.obtenerheroes}
-        />
-        <InsertHeroModal
-          isOpen={this.state.modalInsertar}
-          toggle={this.ocultarModalInsertar}
-          guardarHeroe={this.guardarHeroeParaInsertarPoder} // Pasar función para guardar héroe
-          editar={this.editar}          
-          form={this.state.form}
-          refresh={this.obtenerheroes}
+          hero={this.state.heroToEdit}
+          refresh={this.obtenerHeros}
         />
         <DeleteHeroModal
           isOpen={this.state.modalEliminar}
           toggle={this.ocultarModalEliminar}
-          heroe={this.state.heroeToDelete}
-          refresh={this.obtenerheroes}
+          hero={this.state.heroToDelete}
+          refresh={this.obtenerHeros}
         />
       </Container>
     );
